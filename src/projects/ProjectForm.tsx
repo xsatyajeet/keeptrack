@@ -1,17 +1,17 @@
 import React, { SyntheticEvent, useEffect, useState } from "react";
 import { Project } from "./Project";
+import { useDispatch } from "react-redux";
+import { ThunkDispatch } from "redux-thunk";
+import { ProjectState } from "./state/projectTypes";
+import { AnyAction } from "redux";
+import { saveProject } from "./state/projectActions";
 
 interface ProjectFormProps {
   project: Project;
-  onSave: (project: Project) => void;
   onCancel: () => void;
 }
 
-function ProjectForm({
-  project: initialProject,
-  onSave,
-  onCancel,
-}: ProjectFormProps) {
+function ProjectForm({ project: initialProject, onCancel }: ProjectFormProps) {
   const [project, setProject] = useState(initialProject);
 
   const [errors, setErrors] = useState({
@@ -20,6 +20,7 @@ function ProjectForm({
     budget: "",
   });
 
+  const dispatch = useDispatch<ThunkDispatch<ProjectState, any, AnyAction>>();
   function validate(project: Project) {
     let errors: any = { name: "", description: "", budget: "" };
     if (project.name.length === 0) {
@@ -49,7 +50,7 @@ function ProjectForm({
     if (!isValid()) {
       return;
     }
-    onSave(project);
+    dispatch(saveProject(project));
   };
 
   function handleChange(event: any) {
